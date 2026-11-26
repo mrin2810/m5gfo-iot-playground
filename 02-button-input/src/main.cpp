@@ -5,8 +5,12 @@ int counter = 0;
 
 void displayCounter() {
     M5.Lcd.fillScreen(BLACK);
+    if (counter < 10) {
+        M5.Lcd.setTextColor(WHITE);
+    } else {
+        M5.Lcd.setTextColor(GREEN);
+    }
 
-    M5.Lcd.setTextColor(WHITE);
     M5.Lcd.setTextSize(3);
     
     M5.Lcd.setCursor(30, 40);
@@ -25,12 +29,15 @@ void loop() {
     M5.update();
 
     if (M5.BtnA.wasPressed()) {
-        counter++;
+        counter = counter + 5;
         displayCounter();
     }
 
     if (M5.BtnB.wasPressed()) {
         counter--;
+        if (counter < 0) {
+            counter = 0;
+        }
         displayCounter();
     }
 
