@@ -188,3 +188,103 @@ Instead of starting with a complex IoT application, I am building small, increme
 The project currently covers embedded C++, hardware interfaces, state management, event handling, timing, and basic power management.
 
 Each experiment builds on the previous one, with the long-term goal of creating a fully connected IoT application.
+
+### Project 4: Running LED Animation Controller
+
+Built an interactive LED animation controller using the M5GO V2.7's 10 built-in RGB LEDs, LCD screen, and physical buttons.
+
+#### Features
+
+- Animates one blue LED at a time across all 10 LEDs.
+- Displays the active LED number on the LCD.
+- Supports three animation speeds: 800 ms, 400 ms, and 150 ms.
+- Allows users to pause, resume, and stop the animation.
+- Automatically switches off all LEDs when paused or stopped.
+- Uses non-blocking timing to keep button interactions responsive.
+
+#### Button Controls
+
+| Button | Action |
+|---|---|
+| A | Pause or resume the animation |
+| B | Cycle through animation speeds |
+| C | Stop the animation and turn off all LEDs |
+| A after stopping | Restart the animation |
+
+#### Technical Implementation
+
+**1. Non-blocking timing**
+
+Used `millis()` instead of `delay()` to control LED animation timing without blocking button input.
+
+```cpp
+if (running &&
+    millis() - lastUpdate >= speeds[speedIndex]) {
+
+    lastUpdate = millis();
+    showNextLED();
+}
+```
+
+**2. Cycling through LEDs**
+
+Used the modulo operator to continuously cycle through the 10 LEDs.
+
+```cpp
+nextLed = (nextLed + 1) % NUM_LEDS;
+```
+
+**3. Animation state management**
+
+Used a Boolean variable to manage the running and stopped states.
+
+```cpp
+running = !running;
+```
+
+**4. Hardware cleanup**
+
+Implemented a reusable function to turn off all LEDs when the animation is stopped.
+
+```cpp
+void turnOffLEDs() {
+    strip.clear();
+    strip.show();
+    activeLed = -1;
+}
+```
+
+**5. LCD updates**
+
+Created a reusable `updateScreen()` function to display:
+
+- Current LED number
+- Animation speed
+- Running or stopped status
+
+#### Concepts Learned
+
+- Embedded C++ programming
+- Non-blocking execution with `millis()`
+- Hardware event handling
+- State management
+- Modular programming with reusable functions
+- GPIO-based RGB LED control
+- LCD rendering and screen refresh
+- Hardware cleanup and output state management
+
+#### Power Management Notes
+
+Stopping an animation does not automatically turn off the LEDs. The LED hardware retains its last color while powered.
+
+The program explicitly clears the LEDs using `strip.clear()` and `strip.show()`.
+
+Software-controlled LED shutdown is different from ESP32 deep sleep or complete hardware power-off.
+
+#### Future Improvements
+
+- [ ] Add single-click, double-click, and triple-click detection
+- [ ] Add multiple animation patterns
+- [ ] Create a moving LED trail
+- [ ] Add brightness controls
+- [ ] Implement graceful deep sleep and wake-up
