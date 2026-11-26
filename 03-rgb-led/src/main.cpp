@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <M5Stack.h>
 #include <Adafruit_NeoPixel.h>
+#include <esp_sleep.h>
 
 #define LED_PIN 15
 #define NUM_LEDS 10
@@ -24,9 +25,20 @@ void setColor(uint8_t r, uint8_t g, uint8_t b, const char* name) {
   M5.Lcd.print(name);
 }
 
-void turnOffLEDs() {
+void goToSleep() {
+    // Turn off RGB LEDs
     strip.clear();
     strip.show();
+
+    // Turn off the LCD
+    M5.Lcd.fillScreen(BLACK);
+    M5.Lcd.setBrightness(0);
+
+    // Button A (GPIO 39) wakes the ESP32
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);
+
+    // Enter deep sleep
+    esp_deep_sleep_start();
 }
 
 void setup() {
@@ -52,7 +64,7 @@ void loop() {
     setColor(0, 0, 255, "Blue");
   }
   if(M5.BtnC.pressedFor(1000)) {
-    turnOffLEDs();
+    goToSleep();
   }
   delay(20);
 }
