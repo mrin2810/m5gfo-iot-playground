@@ -11,6 +11,6 @@ void setup() {
     M5.Lcd.print("Hello, World!");
 }
 
-coid loop() {
+void loop() {
     M5.update();
 }
